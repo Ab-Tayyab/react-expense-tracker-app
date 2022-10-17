@@ -69,7 +69,7 @@ export default () => {
                         <Typography variant="h4" sx={{
                             textAlign: "center",
                         }}>History</Typography>
-                        <Scrollbars style={{ width: 330, minHeight: 320 }}>
+                        <Scrollbars style={{ width: 425, minHeight: 320 }}>
                             <List sx={{
                             }}>
                                 {
