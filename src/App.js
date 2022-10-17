@@ -5,7 +5,7 @@ function App() {
   return (
     <div className="App">
       <Context>
-      <ExpenseTrackerApp />
+        <ExpenseTrackerApp />
       </Context>
     </div>
   );
