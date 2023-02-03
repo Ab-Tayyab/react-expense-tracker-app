@@ -1,177 +1,200 @@
+import React from 'react'
 import { useForm } from 'react-hook-form';
 import { useContext } from 'react';
 import { GlobalContext } from '../context/Context';
-import { Card, CardActionArea, Grid, List, ListItem, Typography } from '@mui/material';
-import './style.css'
-import { Box } from '@mui/system';
+import { ListItem, Typography, Box, List } from '@mui/material';
+import DeleteIcon from '@mui/icons-material/Delete';
 import { Scrollbars } from 'react-custom-scrollbars-2';
+import EditIcon from '@mui/icons-material/Edit';
 
-
-export default () => {
-
+const ExpenseTracker = () => {
     // User input Data
-    let { userData } = useContext(GlobalContext);
-    let { register, handleSubmit } = useForm();
-    function formSubmited(item) {
-        userData(item)
+    let { budgetData, expenseData } = useContext(GlobalContext);
+    let { register, handleSubmit, reset } = useForm();
+    function budgetFormSubmited(item) {
+        budgetData(item)
+        reset()
+    }
+
+    function amountFormSubmited(item) {
+        expenseData(item)
+        reset()
     }
 
     // Balance Show
     let budget = 0.00;
     let expense = 0.00;
-    let income = 0.00;
+    let balance = 0.00;
     let sign;
-    const { mytransection, dltData } = useContext(GlobalContext);
+    const { mytransection, dltData, myBudget } = useContext(GlobalContext);
     mytransection.forEach((item) => {
-        if (item.budget <= 0) {
-            budget = 0.00;
+        if (item.amount > 0) {
+            expense += (+item.amount)
         }
-        else {
-            budget = item.budget;
-        }
-        if (item.amount < 0) {
-            // balance -= (-item.amount)
-            expense -= (-item.amount)
-        }
-        else {
-            // balance += (+item.amount)
-            income += (+item.amount)
+    })
+    myBudget.forEach((item) => {
+        if (item.budget > 0) {
+            budget = (+item.budget)
+            balance = (budget - expense)
         }
     })
     return (
-        <div>
-            <Grid container spacing={1} sx={{
-                pt: "100px",
-                pb: "30px",
-                justifyContent: "center"
+        <>
+            <Box sx={{
+                background: "#F5F5F5",
+                padding: "20px"
             }}>
-                <Grid className='Grid1' item md={3} xs={10.7} sx={{
-                    mt: "40px",
-                    mb: "10px",
-                    pb: "20px",
-                    ml: "6px",
-                    boxShadow: "2px 4px 10px gray",
-                    maxHeight: "280px",
-                    textAlign: "center",
+                <Box sx={{
+                    display: "flex",
+                    flexWrap: "wrap",
+                    justifyContent: "space-around"
+                }}>
+                    <Box sx={{
+                        width: "350px",
+                        background: "white",
+                        padding: "20px",
+                        borderRadius: "5px"
+                    }}>
+                        <Typography variant="h5">Budget</Typography>
+                        <form
+                            onSubmit={handleSubmit(budgetFormSubmited)}
+                        >
+                            <input {...register('budget')} type='number' placeholder='Enter Total Budget' required style={{
+                                width: "100%",
+                                height: "35px",
+                                margin: "10px 0px 10px 0px",
+                                borderRadius: "5px",
+                            }}></input> <br />
+                            <button style={{
+                                width: "200px",
+                                height: "35px",
+                                background: "#3C79F5",
+                                borderRadius: "5px",
+                                border: "none",
+                                color: "white"
+                            }}>Set Budget</button>
+                        </form>
+                    </Box>
+                    <Box sx={{
+                        width: "350px",
+                        background: "white",
+                        padding: "20px",
+                        borderRadius: "5px"
+                    }}>
+                        <Typography variant="h5">Add Transection</Typography>
+                        <form onSubmit={handleSubmit(amountFormSubmited)}>
+                            <input {...register('description')} type='text' placeholder='Enter Expense Description' required style={{
+                                width: "100%",
+                                height: "35px",
+                                margin: "10px 0px 10px 0px",
+                                borderRadius: "5px",
+                            }}></input>  <br />
+                            <input {...register('amount')} type='number' placeholder='Enter Amount' required style={{
+                                width: "100%",
+                                height: "35px",
+                                margin: "10px 0px 10px 0px",
+                                borderRadius: "5px",
+                            }}></input> <br />
+                            <button style={{
+                                width: "200px",
+                                height: "35px",
+                                background: "#3C79F5",
+                                borderRadius: "5px",
+                                border: "none",
+                                color: "white"
+                            }}>Add Transection</button>
+                        </form>
+                    </Box>
+                </Box>
+                <Box
+                    sx={{
+                        display: "flex",
+                        flexWrap: "wrap",
+                        justifyContent: "space-around",
+                        background: "#3C79F5",
+                        height: "100px",
+                        alignItems: "center",
+                        color: "white",
+                        textAlign: "center",
+                        marginTop: "20px",
+                        borderRadius: "5px",
+                    }}>
+                    <Box>
+                        <Typography>TotalBudget</Typography>
+                        <Typography>
+                            $: {
+                                budget.toFixed(2)
+                            }
+                        </Typography>
+                    </Box>
+                    <Box>
+                        <Typography>Expense</Typography>
+                        <Typography>
+                            {
+                                expense.toFixed(2)
+                            }
+                        </Typography>
+                    </Box>
+                    <Box>
+                        <Typography>Balance</Typography>
+                        <Typography>
+                            {
+                                balance.toFixed(2)
+                            }
+                        </Typography>
+                    </Box>
+                </Box>
+                <Box sx={{
+                    marginTop: "20px",
+                    background: "white",
+                    borderRadius: "5px",
+                    height: "190px",
+                    paddingBottom: "5px"
                 }}>
                     <Typography variant="h4" sx={{
-                        mb: "20px"
-                    }}>Add Transection</Typography>
-                    <form onSubmit={handleSubmit(formSubmited)}>
-                        <input className="neumorphic neumorphic--pressed variation2 pressed"
-                            {...register('description')} type='text' placeholder='Enter your detail' required></input>  <br />
-                        <input className="neumorphic neumorphic--pressed variation2 pressed" {...register('amount')} type='number' placeholder='Enter your amount' required></input> <br />
-                        <button class="custom-btn btn-2">Add Transection</button>
-                    </form>
-                </Grid>
-
-                <Grid item md={4} xs={11} >
-                    <Card sx={{
-                        minHeight: "300px",
-                        pl: "10px",
-                        pr: "5px",
-                        boxShadow: "2px 4px 10px gray",
-                    }}>
-                        <Typography variant="h4" sx={{
-                            textAlign: "center",
-                        }}>History</Typography>
-                        <Scrollbars style={{ width: 425, minHeight: 320 }}>
-                            <List sx={{
-                            }}>
-                                {
-                                    mytransection.map((item, index) => {
-                                        (sign = item.amount > 0 ? "+" : "-")
-                                        return (
-                                            <ListItem className={item.amount > 0 ? "positive" : "negtive"} sx={{
-                                                justifyContent: "space-between",
-                                                mb: "5px",
+                        textAlign: "center",
+                        paddingTop:"10px"
+                    }}>History</Typography>
+                    <Scrollbars style={{ height: 150 }}>
+                        <List sx={{
+                            borderLeftColor: "#3C79F5"
+                        }}>
+                            {
+                                mytransection.map((item, index) => {
+                                    return (
+                                        <ListItem>
+                                            <Box sx={{
+                                                display: "flex",
+                                                justifyContent: "space-around",
+                                                width: "100%",
                                             }}>
-                                                <Box sx={{
-                                                    display: "flex",
-                                                    justifyContent: "space-between",
-                                                    width: "320px",
-                                                }}>
-                                                    <Typography>{item.description} </Typography>
-                                                    <Typography>{sign}${Math.abs(item.amount)}</Typography>
-                                                </Box>
-                                                <button className='history-btn' style={{
-                                                    background: "red",
-                                                    color: "black",
-                                                    width: "30px",
-                                                    height: "30px",
-                                                    border: "none",
+                                                <Typography sx={{
+                                                    borderLeft: "4px solid #3C79F5",
+                                                    paddingLeft: "15px"
+                                                }}>{item.description} </Typography>
+                                                <Typography>RS: {item.amount}</Typography>
+                                                <DeleteIcon sx={{
+                                                    color: "#3C79F5",
+                                                    "&:hover": {
+                                                        color: "red"
+                                                    },
                                                 }} onClick={
                                                     () => {
                                                         mytransection.splice(index, 1)
                                                         dltData([...mytransection])
                                                     }
-                                                }>X</button>
-                                            </ListItem>
-                                        )
-                                    })
-                                }
-                            </List>
-                        </Scrollbars>
-                    </Card>
-                </Grid>
-                <Grid item md={3} xs={10.6} sx={{
-                    boxShadow: "2px 4px 10px gray",
-                    mt: "40px",
-                    ml: "10px",
-                    pb: "30px",
-                    pt: "20px",
-                    maxHeight: "280px",
-                }}>
-                    <Box sx={{
-                        textAlign: "center",
-                        mb: "30px",
-                    }}>
-                        <Typography variant="h4" sx={{
-                            pt: "20px",
-                        }}>Current Balance</Typography>
-                        <Typography variant="h5" sx={{
-                            pt: "20px"
-                        }}>
-                            $:: {
-                                balance.toFixed(2)
+                                                } />
+                                            </Box>
+                                        </ListItem>
+                                    )
+                                })
                             }
-                        </Typography>
-                    </Box>
-                    <Box sx={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                        pl: "7px",
-                        pr: "10px",
-                        textAlign: "center",
-                        color: "white",
-                    }}>
-                        <Box sx={{
-                            padding: "10px",
-                            borderRadius: "10px",
-                            background: "#ABC9FF",
-                        }}>
-                            <Typography>Total Income</Typography>
-                            <Typography>
-                                {
-                                    income.toFixed(2)
-                                }
-                            </Typography>
-                        </Box>
-                        <Box sx={{
-                            background: "#FF8B8B",
-                            borderRadius: "10px",
-                            padding: "10px",
-                        }}>
-                            <Typography>Total Expense</Typography>
-                            <Typography>
-                                {
-                                    expense.toFixed(2)
-                                }
-                            </Typography>
-                        </Box>
-                    </Box>
-                </Grid>
-            </Grid>
-        </div >
+                        </List>
+                    </Scrollbars>
+                </Box>
+            </Box>
+        </>
     )
 }
+
+export default ExpenseTracker
