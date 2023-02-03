@@ -17,18 +17,24 @@ export default () => {
     }
 
     // Balance Show
-    let balance = 0.00;
+    let budget = 0.00;
     let expense = 0.00;
     let income = 0.00;
     let sign;
     const { mytransection, dltData } = useContext(GlobalContext);
     mytransection.forEach((item) => {
+        if (item.budget <= 0) {
+            budget = 0.00;
+        }
+        else {
+            budget = item.budget;
+        }
         if (item.amount < 0) {
-            balance -= (-item.amount)
+            // balance -= (-item.amount)
             expense -= (-item.amount)
         }
         else {
-            balance += (+item.amount)
+            // balance += (+item.amount)
             income += (+item.amount)
         }
     })

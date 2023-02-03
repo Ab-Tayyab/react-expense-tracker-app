@@ -1,20 +1,29 @@
 import { createContext, useState } from 'react';
 
 export let GlobalContext = createContext();
-function Context(props) {
+function ExpenseContext(props) {
   let [transection, setTransection] = useState([]);
-  const getData = (item) => {
+  let [budget, setBudget] = useState([]);
+  const getExpenseData = (item) => {
     setTransection([...transection, item])
   }
   const deletedata = (data) => {
     setTransection([...data])
   }
+
+  const getBudgetData = (item) => {
+    setBudget([item])
+
+  }
   return (
-    <GlobalContext.Provider value={{ mytransection: transection, userData: getData, dltData: deletedata }}>
+    <GlobalContext.Provider value={{
+      mytransection: transection, expenseData: getExpenseData, dltData: deletedata,
+      budgetData: getBudgetData, myBudget:budget
+    }}>
       <div className="main-container">
         {props.children}
       </div>
     </GlobalContext.Provider>
   );
 }
-export default Context;
+export default ExpenseContext;
